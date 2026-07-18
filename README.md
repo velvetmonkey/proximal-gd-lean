@@ -1,5 +1,6 @@
 # proximal-gd-lean
 
+[![thread](https://img.shields.io/badge/%F0%9F%A7%B5-how%20it%20works-1DA1F2)](https://x.com/thevelvetmonke)
 [![Lean 4](https://img.shields.io/badge/Lean-4.28.0-blue)](https://lean-lang.org/)
 [![Mathlib](https://img.shields.io/badge/Mathlib-v4.28.0-purple)](https://github.com/leanprover-community/mathlib4)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -12,7 +13,15 @@ Lean 4 formal proofs of proximal gradient descent for composite convex optimisat
 
 **Zero sorry statements.** Standard axioms only (`propext`, `Classical.choice`, `Quot.sound`).
 
-## Why it matters
+## What this is, and why it matters
+
+This library formalizes proximal gradient descent for a composite objective `F=f+g`. Its headline theorem, `proximal_gd_convergence`, proves a last-iterate comparison bound of `L*||x0-xstar||^2/(2*k)` for every positive iteration count.
+
+The proof uses the correct proximal step measure rather than an ordinary gradient-norm decrease. The prox optimality inequality, smoothness of `f`, and first-order convexity give a per-step Lyapunov bound. Objective monotonicity then supports an induction that places the factor `k` in front of the final gap.
+
+The theorem itself takes an arbitrary reference point `xstar`; interpreting the comparison as suboptimality requires choosing an actual minimizer, whose existence and optimality are not proved here. A total prox map and its `IsProx` certificate are assumed for every input. The source does not construct or compute that map, and the smoothness and convexity properties are direct hypotheses for the supplied gradient map.
+
+## Background and motivation
 
 Many objectives split as F = f + g, where f is smooth (a data-fit term) and g is non-smooth but structured (an ℓ₁ penalty, an indicator of a constraint set, a nuclear norm). Plain gradient descent can't touch the non-smooth part, and the subgradient method is slow. Proximal gradient descent gets the best of both: it takes a gradient step on f and then a **proximal step** on g, recovering the smooth-case O(1/k) rate while handling g exactly. It generalises both gradient descent (g = 0) and projected gradient descent (g = indicator of a convex set). This library machine-checks its convergence theory.
 
